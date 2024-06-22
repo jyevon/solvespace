@@ -32,7 +32,7 @@ LicenseFile=..\..\COPYING.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputBaseFilename={#MyAppName}-{#MyAppVersion}-setup
+OutputBaseFilename=solvespace-setup
 SetupIconFile=..\..\res\win32\icon.ico
 Compression=lzma
 SolidCompression=yes
@@ -73,8 +73,8 @@ Name: "openmp"; Description: "{#MyAppMultiOption}"; GroupDescription: "{#MyAppOp
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "solvespace-openmp.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "solvespace.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\build\bin\RelWithDebInfo\solvespace-openmp.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\build\bin\RelWithDebInfo\solvespace.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
