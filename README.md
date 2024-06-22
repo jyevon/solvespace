@@ -33,6 +33,23 @@ automatically built by the SolveSpace maintainers for each stable release.
 
 [rel]: https://github.com/solvespace/solvespace/releases
 
+#### Deploy Windows setup
+
+The releases include a setup for Windows based on [Inno Setup](https://github.com/jrsoftware/issrc). You can also use it with the following commands to install SolveSpace via a software deployment system without user interaction.
+
+Install: `SolveSpace-3.1-setup.exe /ALLUSERS /VERYSILENT /SUPPRESSMSGBOXES`
+
+Customization (see also [Inno Setup documentation](https://jrsoftware.org/ishelp/index.php?topic=setupcmdline)):
+
+1. Create desktop icon: `/MERGETASKS=desktopicon`
+2. Don't create start menu group: `/NOICONS`
+3. Use `solvespace.exe` instead of `solvespace-openmp.exe` for desktop icon and to open model files: `/MERGETASKS=!openmp`
+4. 1+3.: `/MERGETASKS=desktopicon,!openmp`
+
+Uninstall: `"C:\Program Files (x86)\SolveSpace\unins000.exe" /VERYSILENT /SUPPRESSMSGBOXES`
+
+
+
 ### Via Snap Store
 
 Official releases can be installed from the `stable` channel.
