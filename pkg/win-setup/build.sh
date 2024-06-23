@@ -21,4 +21,5 @@ fi
 ISCC solvespace.iss
 
 exes=(Output/*.exe)
-echo "::set-output name=setup_name::${exes[0]}"
+setup_name=$(basename ${exes[0]})
+echo "::set-output name=setup_name::$setup_name"
