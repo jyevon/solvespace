@@ -5,7 +5,8 @@
 #define MyAppVersion "3.1"
 #define MyAppPublisher MyAppName + " Team"
 #define MyAppURL "https://solvespace.com/"
-;#define MyAppExeName "solvespace-openmp.exe"
+#define MyAppExeDir "..\..\build\bin\RelWithDebInfo"
+#define MyAppSetupIcon "..\..\res\win32\icon.ico"
 #define MyAppAssocName MyAppName + " model"
 #define MyAppAssocExt ".slvs"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -36,7 +37,7 @@ LicenseFile=..\..\COPYING.txt
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputBaseFilename=solvespace-setup
-SetupIconFile=..\..\res\win32\icon.ico
+SetupIconFile={#MyAppSetupIcon}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -76,8 +77,8 @@ Name: "openmp"; Description: "{#MyAppMultiOption}"; GroupDescription: "{#MyAppOp
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\build\bin\RelWithDebInfo\solvespace-openmp.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\build\bin\RelWithDebInfo\solvespace.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppExeDir}\solvespace-openmp.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppExeDir}\solvespace.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
