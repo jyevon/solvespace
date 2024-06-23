@@ -108,7 +108,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windows-setup
-          path: pkg/windows/Output/*.exe
+          path: pkg/win-setup/Output/*.exe
 
   build_release_macos:
     needs: [test_ubuntu, test_windows, test_macos]
