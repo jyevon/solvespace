@@ -37,16 +37,18 @@ automatically built by the SolveSpace maintainers for each stable release.
 
 The releases include a setup for Windows based on [Inno Setup](https://github.com/jrsoftware/issrc). You can also use it with the following commands to install SolveSpace via a software deployment system without user interaction.
 
-Install: `SolveSpace-3.1-setup.exe /ALLUSERS /VERYSILENT /SUPPRESSMSGBOXES`
+Install: `solvespace-x.y-setup.exe /VERYSILENT /SUPPRESSMSGBOXES`
 
 Customization (see also [Inno Setup documentation](https://jrsoftware.org/ishelp/index.php?topic=setupcmdline)):
 
-1. Create desktop icon: `/MERGETASKS=desktopicon`
-2. Don't create start menu group: `/NOICONS`
-3. Use `solvespace.exe` instead of `solvespace-openmp.exe` for desktop icon and to open model files: `/MERGETASKS=!openmp`
-4. 1+3.: `/MERGETASKS=desktopicon,!openmp`
+1. Use custom install directory: e.g. `/DIR="D:\SolveSpace"`
+2. Install for current user only: `/CURRENTUSER`
+3. Create desktop icon: `/MERGETASKS=desktopicon`
+4. Don't create start menu group: `/NOICONS`
+5. Use `solvespace.exe` instead of `solvespace-openmp.exe` for desktop icon and to open model files: `/MERGETASKS=!openmp`
+6. 3+5.: `/MERGETASKS=desktopicon,!openmp`
 
-Uninstall: `"C:\Program Files (x86)\SolveSpace\unins000.exe" /VERYSILENT /SUPPRESSMSGBOXES`
+Uninstall: `"C:\Program Files (x86)\SolveSpace\unins000.exe" /VERYSILENT /SUPPRESSMSGBOXES` (unless install directory was changed, e.g. using 1. or 2. above)
 
 
 
