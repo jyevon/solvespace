@@ -19,3 +19,6 @@ then
 fi
 
 ISCC solvespace.iss
+
+exes=(Output/*.exe)
+echo "::set-output name=exe_name::${exes[0]}"

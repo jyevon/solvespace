@@ -108,7 +108,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windows-setup
-          path: pkg/windows/Output/solvespace-setup.exe
+          path: pkg/windows/Output/*.exe
 
   build_release_macos:
     needs: [test_ubuntu, test_windows, test_macos]
@@ -201,15 +201,15 @@ jobs:
         asset_path: windows-openmp/solvespace-openmp.exe
         asset_name: solvespace-openmp.exe
         asset_content_type: binary/octet-stream
-    - name: Upload solvespace-setup.exe
+    - name: Upload ${{ steps.build_release_windows_setup.outputs.exe_name }}
       uses: actions/upload-release-asset@v1
       continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
-        asset_path: windows-setup/solvespace-setup.exe
-        asset_name: solvespace-setup.exe
+        asset_path: windows-setup/${{ steps.build_release_windows_setup.outputs.exe_name }}
+        asset_name: ${{ steps.build_release_windows_setup.outputs.exe_name }}
         asset_content_type: binary/octet-stream
     - name: Upload SolveSpace.dmg
       uses: actions/upload-release-asset@v1

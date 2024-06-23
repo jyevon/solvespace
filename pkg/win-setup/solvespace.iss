@@ -36,7 +36,7 @@ LicenseFile=..\..\COPYING.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputBaseFilename=solvespace-setup
+OutputBaseFilename=solvespace-{#MyAppVersion}-setup
 SetupIconFile={#MyAppSetupIcon}
 Compression=lzma
 SolidCompression=yes
