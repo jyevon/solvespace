@@ -1,19 +1,17 @@
 #!/bin/sh -ex
 cd "$(dirname $0)"
 
-REPO="../.."
-
-mkdir -p "$REPO/build/bin/RelWithDebInfo/"
-
-if [ -f "$REPO/windows/solvespace.exe" ]
+if [ ! -d executables/ ]
 then
-    cp "$REPO/windows/solvespace.exe" "$REPO/build/bin/RelWithDebInfo/"
+    mkdir executables
 fi
 
-if [ -f "$REPO/windows-openmp/solvespace-openmp.exe" ]
+if [ -n "$(find executables/ -maxdepth 0 -empty)" ]
 then
-    cp "$REPO/windows-openmp/solvespace-openmp.exe" "$REPO/build/bin/RelWithDebInfo/"
+   echo "Please place the compiled .exe files in executables/ first"
+   exit -1
 fi
+
 
 if ! command -v ISCC &> /dev/null
 then

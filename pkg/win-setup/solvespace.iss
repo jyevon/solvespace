@@ -5,7 +5,7 @@
 #define MyAppVersion "3.1"
 #define MyAppPublisher MyAppName + " Team"
 #define MyAppURL "https://solvespace.com/"
-#define MyAppExeDir "..\..\build\bin\RelWithDebInfo"
+#define MyAppExeDir "executables"
 #define MyAppSetupIcon "..\..\res\win32\icon.ico"
 #define MyAppAssocName MyAppName + " model"
 #define MyAppAssocExt ".slvs"
