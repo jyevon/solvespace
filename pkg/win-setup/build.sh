@@ -1,4 +1,6 @@
 #!/bin/sh -ex
+# USAGE: ./build.sh [<version>]
+
 cd "$(dirname $0)"
 
 if [ ! -d executables/ ]
@@ -13,12 +15,26 @@ then
 fi
 
 
+version="$1"
+if [ -n "$version" ]
+then
+    version="${version#v}"
+else
+    rev="$GITHUB_SHA"
+    if [ -z "$rev" ]
+    then
+        rev=HEAD
+    fi
+    
+    version=$(git rev-parse --short "$rev")
+fi
+
 if ! command -v ISCC &> /dev/null
 then
     PATH="$PATH:/C/Program Files (x86)/Inno Setup 6"
 fi
 
-ISCC solvespace.iss
+APP_VERSION=$version ISCC solvespace.iss
 
 exes=(Output/*.exe)
 setup_name=$(basename ${exes[0]})

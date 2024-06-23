@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SolveSpace"
-#define MyAppVersion "3.1"
+#define MyAppVersion GetEnv('APP_VERSION')
 #define MyAppPublisher MyAppName + " Team"
 #define MyAppURL "https://solvespace.com/"
 #define MyAppExeDir "executables"

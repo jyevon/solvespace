@@ -105,7 +105,7 @@ jobs:
         uses: actions/download-artifact@v2
       - name: Build
         id: build
-        run: .github/scripts/build-win-setup.sh
+        run: .github/scripts/build-win-setup.sh ${{ github.event.release.tag_name }}
         shell: bash
       - name: Upload artifact
         uses: actions/upload-artifact@v2
