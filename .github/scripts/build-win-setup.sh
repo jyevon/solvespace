@@ -1,3 +1,3 @@
 #!/bin/sh -xe
 
-./pkg/windows/build.sh
+./pkg/win-setup/build.sh
