@@ -7,6 +7,7 @@
 #define MyAppURL "https://solvespace.com/"
 #define MyAppExeDir "executables"
 #define MyAppSetupIcon "..\..\res\win32\icon.ico"
+#define MyAppLicense "..\..\COPYING.txt"
 #define MyAppAssocName MyAppName + " model"
 #define MyAppAssocExt ".slvs"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -32,7 +33,7 @@ DefaultDirName={autopf}\{#MyAppName}
 ChangesAssociations=yes
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=..\..\COPYING.txt
+LicenseFile={#MyAppLicense}
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
