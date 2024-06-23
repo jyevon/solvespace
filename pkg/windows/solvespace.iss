@@ -3,6 +3,7 @@
 
 #define MyAppName "SolveSpace"
 #define MyAppVersion "3.1"
+#define MyAppPublisher MyAppName + " Team"
 #define MyAppURL "https://solvespace.com/"
 ;#define MyAppExeName "solvespace-openmp.exe"
 #define MyAppAssocName MyAppName + " model"
@@ -20,10 +21,12 @@ AppId={{218D0358-F798-44A9-AFD5-57B638BA41D8}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
+AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 UninstallDisplayName={#MyAppName}
+UninstallDisplayIcon={app}\{code:GetMainExeName},0
 DefaultDirName={autopf}\{#MyAppName}
 ChangesAssociations=yes
 DefaultGroupName={#MyAppName}
