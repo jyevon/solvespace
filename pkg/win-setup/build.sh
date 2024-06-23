@@ -15,4 +15,9 @@ then
     cp "$REPO/windows-openmp/solvespace-openmp.exe" "$REPO/build/bin/RelWithDebInfo/"
 fi
 
-"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" solvespace.iss
+if ! command -v ISCC &> /dev/null
+then
+    PATH="$PATH:/C/Program Files (x86)/Inno Setup 6"
+fi
+
+ISCC solvespace.iss
