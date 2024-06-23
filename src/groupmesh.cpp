@@ -635,8 +635,11 @@ void Group::DrawMesh(DrawMeshAs how, Canvas *canvas) {
             std::vector<uint32_t> faces;
             SS.GW.GroupSelection();
             auto const &gs = SS.GW.gs;
-            if(gs.faces > 0) faces.push_back(gs.face[0].v);
-            if(gs.faces > 1) faces.push_back(gs.face[1].v);
+            // See also GraphicsWindow::MakeSelected "if(c >= MAX_SELECTABLE_FACES)"
+            // and GraphicsWindow::GroupSelection "if(e->IsFace())"
+            for(auto &fc : gs.face) {
+                faces.push_back(fc.v);
+            }
             canvas->DrawFaces(displayMesh, faces, hcf);
             break;
         }

@@ -412,7 +412,9 @@ bool Group::IsForcedToMesh() const {
 }
 
 bool Group::IsTriangleMeshAssembly() const {
-    return type == Type::LINKED && linkFile.Extension() == "stl";
+    if (type != Type::LINKED) return false;
+    if (!impMesh.IsEmpty() && impShell.IsEmpty()) return true;
+    return false;
 }
 
 std::string Group::DescriptionString() {
@@ -1178,6 +1180,11 @@ void Group::CopyEntity(IdList<Entity,hEntity> *el,
             break;
 
         default: {
+            if((Entity::Type::IMAGE == ep->type) && (true == ep->construction)) {
+                // Do not copy image entities if they are construction.
+                return;
+            }
+
             int i, points;
             bool hasNormal, hasDistance;
             EntReqTable::GetEntityInfo(ep->type, ep->extraPoints,

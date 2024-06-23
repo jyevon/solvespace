@@ -185,15 +185,17 @@ void GraphicsWindow::MakeSelected(Selection *stog) {
 
     if(stog->entity.v != 0 && SK.GetEntity(stog->entity)->IsFace()) {
         // In the interest of speed for the triangle drawing code,
-        // only two faces may be selected at a time.
-        int c = 0;
+        // only MAX_SELECTABLE_FACES faces may be selected at a time.
+        unsigned int c = 0;
         Selection *s;
         selection.ClearTags();
         for(s = selection.First(); s; s = selection.NextAfter(s)) {
             hEntity he = s->entity;
             if(he.v != 0 && SK.GetEntity(he)->IsFace()) {
                 c++;
-                if(c >= 2) s->tag = 1;
+                // See also GraphicsWindow::GroupSelection "if(e->IsFace())"
+                // and Group::DrawMesh "case DrawMeshAs::SELECTED:"
+                if(c >= MAX_SELECTABLE_FACES) s->tag = 1;
             }
         }
         selection.RemoveTagged();
@@ -218,13 +220,28 @@ void GraphicsWindow::SelectByMarquee() {
         bool entityHasBBox;
         BBox entityBBox = e.GetOrGenerateScreenBBox(&entityHasBBox);
         if(entityHasBBox && entityBBox.Overlaps(marqueeBBox)) {
+            if(e.type == Entity::Type::LINE_SEGMENT) {
+                Vector p0 = SS.GW.ProjectPoint3(e.EndpointStart());
+                Vector p1 = SS.GW.ProjectPoint3(e.EndpointFinish());
+                if((!marqueeBBox.Contains({p0.x, p0.y}, 0)) &&
+                   (!marqueeBBox.Contains({p1.x, p1.y}, 0))) {
+                    // The selection marquee does not contain either of the line segment end points.
+                    // This means that either the segment is entirely outside the marquee or that
+                    // it intersects it. Check if it does...
+                    if(!Vector::BoundingBoxIntersectsLine(marqueeBBox.maxp, marqueeBBox.minp, p0,
+                                                          p1, true)) {
+                        // ... it does not so it is outside.
+                        continue;
+                    }
+                }
+            }
             MakeSelected(e.h);
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-// Sort the selection according to various critieria: the entities and
+// Sort the selection according to various criteria: the entities and
 // constraints separately, counts of certain types of entities (circles,
 // lines, etc.), and so on.
 //-----------------------------------------------------------------------------

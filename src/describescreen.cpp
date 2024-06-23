@@ -19,6 +19,17 @@ void TextWindow::ScreenEditTtfText(int link, uint32_t v) {
     SS.TW.edit.request = hr;
 }
 
+void TextWindow::ScreenToggleTtfKerning(int link, uint32_t v) {
+    hRequest hr = { v };
+    Request *r = SK.GetRequest(hr);
+
+    SS.UndoRemember();
+    r->extraPoints = !r->extraPoints;
+
+    SS.MarkGroupDirty(r->group);
+    SS.ScheduleShowTW();
+}
+
 void TextWindow::ScreenSetTtfFont(int link, uint32_t v) {
     int i = (int)v;
     if(i < 0) return;
@@ -64,11 +75,6 @@ void TextWindow::ScreenConstraintShowAsRadius(int link, uint32_t v) {
 void TextWindow::DescribeSelection() {
     Printf(false, "");
 
-    auto const &gs = SS.GW.gs;
-    if(gs.n == 1 && (gs.points == 1 || gs.entities == 1)) {
-        Entity *e = SK.GetEntity(gs.points == 1 ? gs.point[0] : gs.entity[0]);
-        Vector p;
-
 #define COSTR_NO_LINK(p) \
     SS.MmToString((p).x).c_str(), \
     SS.MmToString((p).y).c_str(), \
@@ -82,6 +88,23 @@ void TextWindow::DescribeSelection() {
 #define CO_LINK(e, p) e->h, (&TextWindow::ScreenSelectEntity), (&TextWindow::ScreenHoverEntity), CO(p)
 #define PT_AS_NUM_LINK "%Ll%D%f%h" PT_AS_NUM "%E"
 
+    auto const &gs = SS.GW.gs;
+
+    auto ListFaces = [&]() {
+        char abc = 'A';
+        for(auto &fc : gs.face) {
+            Vector n = SK.GetEntity(fc)->FaceGetNormalNum();
+            Printf(true, " plane%c normal = " PT_AS_NUM, abc, CO(n));
+            Vector p = SK.GetEntity(fc)->FaceGetPointNum();
+            Printf(false, "   plane%c thru = " PT_AS_STR, abc, COSTR(SK.GetEntity(fc), p));
+            ++abc;
+        }
+    };
+
+    if(gs.n == 1 && (gs.points == 1 || gs.entities == 1)) {
+        Entity *e = SK.GetEntity(gs.points == 1 ? gs.point[0] : gs.entity[0]);
+        Vector p;
+
         switch(e->type) {
             case Entity::Type::POINT_IN_3D:
             case Entity::Type::POINT_IN_2D:
@@ -89,6 +112,7 @@ void TextWindow::DescribeSelection() {
             case Entity::Type::POINT_N_ROT_TRANS:
             case Entity::Type::POINT_N_COPY:
             case Entity::Type::POINT_N_ROT_AA:
+            case Entity::Type::POINT_N_ROT_AXIS_TRANS:
                 p = e->PointGetNum();
                 Printf(false, "%FtPOINT%E at " PT_AS_STR, COSTR(e, p));
                 break;
@@ -179,7 +203,9 @@ void TextWindow::DescribeSelection() {
             case Entity::Type::FACE_N_ROT_TRANS:
             case Entity::Type::FACE_N_ROT_AA:
             case Entity::Type::FACE_N_TRANS:
-                Printf(false, "%FtPLANE FACE%E");
+            case Entity::Type::FACE_ROT_NORMAL_PT:
+            case Entity::Type::FACE_N_ROT_AXIS_TRANS:
+                  Printf(false, "%FtPLANE FACE%E");
                 p = e->FaceGetNormalNum();
                 Printf(true,  "   normal = " PT_AS_NUM, CO(p));
                 p = e->FaceGetPointNum();
@@ -190,8 +216,11 @@ void TextWindow::DescribeSelection() {
                 Printf(false, "%FtTRUETYPE FONT TEXT%E");
                 Printf(true, "  font = '%Fi%s%E'", e->font.c_str());
                 if(e->h.isFromRequest()) {
-                    Printf(false, "  text = '%Fi%s%E' %Fl%Ll%f%D[change]%E",
+                    Printf(true, "  text = '%Fi%s%E' %Fl%Ll%f%D[change]%E",
                         e->str.c_str(), &ScreenEditTtfText, e->h.request().v);
+                    Printf(true, "  %Fd%f%D%Ll%s  apply kerning",
+                           &ScreenToggleTtfKerning, e->h.request().v,
+                           e->extraPoints ? CHECK_TRUE : CHECK_FALSE);
                     Printf(true, "  select new font");
                     SS.fonts.LoadAll();
                     // Not using range-for here because we use i inside the output.
@@ -405,15 +434,10 @@ void TextWindow::DescribeSelection() {
     } else if(gs.n == 2 && gs.faces == 2) {
         Printf(false, "%FtTWO PLANE FACES");
 
-        Vector n0 = SK.GetEntity(gs.face[0])->FaceGetNormalNum();
-        Printf(true,  " planeA normal = " PT_AS_NUM, CO(n0));
-        Vector p0 = SK.GetEntity(gs.face[0])->FaceGetPointNum();
-        Printf(false, "   planeA thru = " PT_AS_STR, COSTR(SK.GetEntity(gs.face[0]), p0));
+        ListFaces();
 
+        Vector n0 = SK.GetEntity(gs.face[0])->FaceGetNormalNum();
         Vector n1 = SK.GetEntity(gs.face[1])->FaceGetNormalNum();
-        Printf(true,  " planeB normal = " PT_AS_NUM, CO(n1));
-        Vector p1 = SK.GetEntity(gs.face[1])->FaceGetPointNum();
-        Printf(false, "   planeB thru = " PT_AS_STR, COSTR(SK.GetEntity(gs.face[1]), p1));
 
         double theta = acos(n0.Dot(n1));
         Printf(true,  "         angle = %Fi%2%E degrees", theta*180/PI);
@@ -422,17 +446,32 @@ void TextWindow::DescribeSelection() {
         Printf(false, "      or angle = %Fi%2%E (mod 180)", theta*180/PI);
 
         if(fabs(theta) < 0.01) {
-            double d = (p1.Minus(p0)).Dot(n0);
+            Vector p0 = SK.GetEntity(gs.face[0])->FaceGetPointNum();
+            Vector p1 = SK.GetEntity(gs.face[1])->FaceGetPointNum();
+
+            double d  = (p1.Minus(p0)).Dot(n0);
             Printf(true,  "      distance = %Fi%s", SS.MmToString(d).c_str());
         }
-    } else if(gs.n == 0 && gs.stylables > 0) {
-        Printf(false, "%FtSELECTED:%E comment text");
+    } else if(gs.n == 3 && gs.faces == 3) {
+        Printf(false, "%FtTHREE PLANE FACES");
+
+        ListFaces();
+
+        // We should probably compute and show the intersection point if there is one.
+
     } else if(gs.n == 0 && gs.constraints == 1) {
         Constraint *c = SK.GetConstraint(gs.constraint[0]);
         const std::string &desc = c->DescriptionString().c_str();
 
         if(c->type == Constraint::Type::COMMENT) {
             Printf(false, "%FtCOMMENT%E  %s", desc.c_str());
+            if(c->ptA != Entity::NO_ENTITY) {
+                Vector p = SK.GetEntity(c->ptA)->PointGetNum();
+                Printf(true,  "  attached to point at: " PT_AS_STR, COSTR(SK.GetEntity(c->ptA), p));
+                Vector dv = c->disp.offset;
+                Printf(false, "    distance = %Fi%s", SS.MmToString(dv.Magnitude()).c_str());
+                Printf(false, "  d(x, y, z) = " PT_AS_STR_NO_LINK, COSTR_NO_LINK(dv));
+            }
         } else if(c->HasLabel()) {
             if(c->reference) {
                 Printf(false, "%FtREFERENCE%E  %s", desc.c_str());
