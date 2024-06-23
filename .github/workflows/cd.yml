@@ -95,7 +95,7 @@ jobs:
     name: Build Release Windows (Setup)
     runs-on: windows-2019
     outputs:
-      setup_name: {{ steps.build.outputs.setup_name }}
+      setup_name: ${{ steps.build.outputs.setup_name }}
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependencies
